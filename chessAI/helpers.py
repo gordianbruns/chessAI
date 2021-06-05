@@ -211,10 +211,10 @@ def is_valid_bishop_move(board, start_position, end_position):
                 pos2 = end_position[1] - i
             else:
                 pos2 = end_position[1] + i
-            if board.get_figure((pos1, pos2)) is not None:
+            if board.get_figure(pos1, pos2) is not None:
                 return False
         if board.get_figure(end_position[0], end_position[1]) is not None:
-            if board.get_figure(end_position[0], end_position[1]).getColor() == board.get_turn():
+            if board.get_figure(end_position[0], end_position[1]).get_color() == board.get_turn():
                 return False
         return True
     return False

@@ -56,12 +56,28 @@ def move_generator(board):
                 moves.extend(generate_knight_moves(board, pos))
             if type(figure) == Bishop:
                 moves.extend(generate_bishop_moves(board, pos))
-            if type(figure) == Queen:
-                return
             if type(figure) == Rook:
+                moves.extend(generate_rook_moves(board, pos))
+            if type(figure) == Queen:
+                moves.extend(generate_queen_moves(board, pos))
+            if type(figure) == King:    # add castling for king move
                 return
+
+    else:
+        for pos, figure in board.get_black_figures().items():
+            if type(figure) == Pawn:
+                moves.extend(generate_pawn_moves(board, pos))
+            if type(figure) == Knight:
+                moves.extend(generate_knight_moves(board, pos))
+            if type(figure) == Bishop:
+                moves.extend(generate_bishop_moves(board, pos))
+            if type(figure) == Rook:
+                moves.extend(generate_rook_moves(board, pos))
+            if type(figure) == Queen:
+                moves.extend(generate_queen_moves(board, pos))
             if type(figure) == King:
                 return
+    return moves
 
 
 def generate_pawn_moves(board, position):   # assumes that it is a pawn
@@ -171,9 +187,52 @@ def is_valid_knight_move(board, start_position, end_position):  # assumes that i
     return False
 
 
+def generate_rook_moves(board, position):
+    moves = []
+    for i in range(1, 8):
+        if is_valid_rook_move(board, position, (position[0] + i, position[1])):
+            if not is_check(transition_function(board, position, (position[0] + i, position[1]))):
+                moves.append((position, (position[0] + i, position[1])))
+        if is_valid_rook_move(board, position, (position[0] - i, position[1])):
+            if not is_check(transition_function(board, position, (position[0] - i, position[1]))):
+                moves.append((position, (position[0] - i, position[1])))
+        if is_valid_rook_move(board, position, (position[0], position[1] + i)):
+            if not is_check(transition_function(board, position, (position[0], position[1] + i))):
+                moves.append((position, (position[0], position[1] + i)))
+        if is_valid_rook_move(board, position, (position[0], position[1] - i)):
+            if not is_check(transition_function(board, position, (position[0], position[1] - i))):
+                moves.append((position, (position[0], position[1] - i)))
+    return moves
+
+
 def is_valid_rook_move(board, start_position, end_position):
     if is_in_bounds(end_position):
-        return
+        go_y = start_position[0] - end_position[0]
+        go_x = start_position[1] - end_position[1]
+        if go_y != 0 and go_x != 0:
+            return False
+        if board.get_figure(end_position[0], end_position[1]) is not None:
+            if board.get_figure(end_position[0], end_position[1]).get_color() == board.get_turn():
+                return False
+        for i in range(1, abs(go_x) + abs(go_y)):
+            pos1 = 0
+            pos2 = 0
+            if go_y < 0:
+                pos1 = end_position[0] - i
+                pos2 = 0
+            if go_y > 0:
+                pos1 = end_position[0] + i
+                pos2 = 0
+            if go_x < 0:
+                pos1 = 0
+                pos2 = end_position[1] - i
+            if go_x > 0:
+                pos1 = 0
+                pos2 = end_position[1] + i
+            if board.get_figure(pos1, pos2) is not None:
+                return False
+        return True
+    return False
 
 
 def generate_bishop_moves(board, position):
@@ -218,7 +277,19 @@ def is_valid_bishop_move(board, start_position, end_position):
     return False
 
 
+def generate_queen_moves(board, position):
+    moves = []
+    moves.extend(generate_bishop_moves(board, position))
+    moves.extend(generate_rook_moves(board, position))
+    return moves
+
+
 def is_valid_queen_move(board, start_position, end_position):
+    return is_valid_bishop_move(board, start_position, end_position) or \
+           is_valid_rook_move(board, start_position, end_position)
+
+
+def can_castle(board):
     return
 
 

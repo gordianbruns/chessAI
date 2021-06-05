@@ -99,4 +99,22 @@ class Test(unittest.TestCase):
         self.assertFalse(is_valid_knight_move(board, (2, 1), (5, 6)), "Should be False")
         self.assertFalse(is_valid_knight_move(board, (2, 1), (4, 2)), "Should be False")
 
-
+    def test_is_valid_bishop_move(self):
+        board = Board()
+        white_bishop1 = Bishop(WHITE, 3, 3, figDict[WHITE][Bishop])
+        black_bishop1 = Bishop(BLACK, 4, 4, figDict[BLACK][Bishop])
+        board.add_figure(white_bishop1)
+        board.add_figure(black_bishop1)
+        print("--------- White Bishop Tests")
+        print("----------- Test series 1")
+        self.assertTrue(is_valid_bishop_move(board, (3, 3), (4, 4)), "Should be True")
+        self.assertTrue(is_valid_bishop_move(board, (3, 3), (1, 1)), "Should be True")
+        self.assertFalse(is_valid_bishop_move(board, (3, 3), (6, 7)), "Should be False")
+        self.assertFalse(is_valid_bishop_move(board, (3, 3), (5, 5)), "Should be False")
+        self.assertFalse(is_valid_bishop_move(board, (3, 3), (8, 8)), "Should be False")
+        board.switch_turn()
+        print("--------- Black Bishop Tests")
+        print("----------- Test series 1")
+        self.assertTrue(is_valid_bishop_move(board, (4, 4), (3, 3)), "Should be True")
+        self.assertTrue(is_valid_bishop_move(board, (4, 4), (2, 6)), "Should be True")
+        self.assertFalse(is_valid_bishop_move(board, (4, 4), (2, 2)), "Should be False")

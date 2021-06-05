@@ -67,29 +67,28 @@ def move_generator(board):
 def generate_pawn_moves(board, position):   # assumes that it is a pawn
     moves = []
     if board.get_turn() == WHITE:
-        if is_valid_pawn_move(board, position, [position[0] + 1, position[1] - 1]):
-            if not is_check(transition_function(board, position, [position[0] + 1, position[1] - 1])):
-                moves.append([position, [position[0] + 1, position[1] - 1]])
-        if is_valid_pawn_move(board, position, [position[0] + 1, position[1]]):
-            if not is_check(transition_function(board, position, [position[0] + 1, position[1]])):
-                moves.append([position, [position[0] + 1, position[1]]])
-        if is_valid_pawn_move(board, position, [position[0] + 1, position[1] + 1]):
-            if not is_check(transition_function(board, position, [position[0] + 1, position[1] + 1])):
-                moves.append([position, [position[0] + 1, position[1] + 1]])
+        if is_valid_pawn_move(board, position, (position[0] + 1, position[1] - 1)):
+            if not is_check(transition_function(board, position, (position[0] + 1, position[1] - 1))):
+                moves.append([position, (position[0] + 1, position[1] - 1)])
+        if is_valid_pawn_move(board, position, (position[0] + 1, position[1])):
+            if not is_check(transition_function(board, position, (position[0] + 1, position[1]))):
+                moves.append([position, (position[0] + 1, position[1])])
+        if is_valid_pawn_move(board, position, (position[0] + 1, position[1] + 1)):
+            if not is_check(transition_function(board, position, (position[0] + 1, position[1] + 1))):
+                moves.append([position, (position[0] + 1, position[1] + 1)])
     else:
-        if is_valid_pawn_move(board, position, [position[0] - 1, position[1] - 1]):
-            if not is_check(transition_function(board, position, [position[0] - 1, position[1] - 1])):
-                moves.append([position, [position[0] - 1, position[1] - 1]])
-        if is_valid_pawn_move(board, position, [position[0] - 1, position[1]]):
-            if not is_check(transition_function(board, position, [position[0] - 1, position[1]])):
-                moves.append([position, [position[0] - 1, position[1]]])
-        if is_valid_pawn_move(board, position, [position[0] - 1, position[1] + 1]):
-            if not is_check(transition_function(board, position, [position[0] - 1, position[1] + 1])):
-                moves.append([position, [position[0] - 1, position[1] + 1]])
+        if is_valid_pawn_move(board, position, (position[0] - 1, position[1] - 1)):
+            if not is_check(transition_function(board, position, (position[0] - 1, position[1] - 1))):
+                moves.append([position, (position[0] - 1, position[1] - 1)])
+        if is_valid_pawn_move(board, position, (position[0] - 1, position[1])):
+            if not is_check(transition_function(board, position, (position[0] - 1, position[1]))):
+                moves.append([position, (position[0] - 1, position[1])])
+        if is_valid_pawn_move(board, position, (position[0] - 1, position[1] + 1)):
+            if not is_check(transition_function(board, position, (position[0] - 1, position[1] + 1))):
+                moves.append([position, (position[0] - 1, position[1] + 1)])
     return moves
 
 
-# consider changing [] to ()
 def is_valid_pawn_move(board, start_position, end_position):    # assumes that it is a pawn
     if is_in_bounds(end_position):    # within bounds
         diff_vertical = start_position[0] - end_position[0]
@@ -127,33 +126,32 @@ def is_valid_pawn_move(board, start_position, end_position):    # assumes that i
     return False
 
 
-# consider changing [] to ()
 def generate_knight_moves(board, position):     # assumes that it is a knight
     moves = []
-    if is_valid_knight_move(board, position, [position[0] - 2, position[1] + 1]):
-        if not is_check(transition_function(board, position, [position[0] - 2, position[1] + 1])):
-            moves.append([position, [position[0] - 2, position[1] + 1]])
-    if is_valid_knight_move(board, position, [position[0] - 2, position[1] - 1]):
-        if not is_check(transition_function(board, position, [position[0] - 2, position[1] - 1])):
-            moves.append([position, [position[0] - 2, position[1] - 1]])
-    if is_valid_knight_move(board, position, [position[0] + 2, position[1] + 1]):
-        if not is_check(transition_function(board, position, [position[0] + 2, position[1] + 1])):
-            moves.append([position, [position[0] + 2, position[1] + 1]])
-    if is_valid_knight_move(board, position, [position[0] + 2, position[1] - 1]):
-        if not is_check(transition_function(board, position, [position[0] + 2, position[1] - 1])):
-            moves.append([position, [position[0] + 2, position[1] - 1]])
-    if is_valid_knight_move(board, position, [position[0] - 1, position[1] + 2]):
-        if not is_check(transition_function(board, position, [position[0] - 1, position[1] + 2])):
-            moves.append([position, [position[0] - 1, position[1] + 2]])
-    if is_valid_knight_move(board, position, [position[0] + 1, position[1] + 2]):
-        if not is_check(transition_function(board, position, [position[0] + 1, position[1] + 2])):
-            moves.append([position, [position[0] + 1, position[1] + 2]])
-    if is_valid_knight_move(board, position, [position[0] - 1, position[1] - 2]):
-        if not is_check(transition_function(board, position, [position[0] - 1, position[1] - 2])):
-            moves.append([position, [position[0] - 1, position[1] - 2]])
-    if is_valid_knight_move(board, position, [position[0] + 1, position[1] - 2]):
-        if not is_check(transition_function(board, position, [position[0] + 1, position[1] - 2])):
-            moves.append([position, [position[0] + 1, position[1] - 2]])
+    if is_valid_knight_move(board, position, (position[0] - 2, position[1] + 1)):
+        if not is_check(transition_function(board, position, (position[0] - 2, position[1] + 1))):
+            moves.append([position, (position[0] - 2, position[1] + 1)])
+    if is_valid_knight_move(board, position, (position[0] - 2, position[1] - 1)):
+        if not is_check(transition_function(board, position, (position[0] - 2, position[1] - 1))):
+            moves.append([position, (position[0] - 2, position[1] - 1)])
+    if is_valid_knight_move(board, position, (position[0] + 2, position[1] + 1)):
+        if not is_check(transition_function(board, position, (position[0] + 2, position[1] + 1))):
+            moves.append([position, (position[0] + 2, position[1] + 1)])
+    if is_valid_knight_move(board, position, (position[0] + 2, position[1] - 1)):
+        if not is_check(transition_function(board, position, (position[0] + 2, position[1] - 1))):
+            moves.append([position, (position[0] + 2, position[1] - 1)])
+    if is_valid_knight_move(board, position, (position[0] - 1, position[1] + 2)):
+        if not is_check(transition_function(board, position, (position[0] - 1, position[1] + 2))):
+            moves.append([position, (position[0] - 1, position[1] + 2)])
+    if is_valid_knight_move(board, position, (position[0] + 1, position[1] + 2)):
+        if not is_check(transition_function(board, position, (position[0] + 1, position[1] + 2))):
+            moves.append([position, (position[0] + 1, position[1] + 2)])
+    if is_valid_knight_move(board, position, (position[0] - 1, position[1] - 2)):
+        if not is_check(transition_function(board, position, (position[0] - 1, position[1] - 2))):
+            moves.append([position, (position[0] - 1, position[1] - 2)])
+    if is_valid_knight_move(board, position, (position[0] + 1, position[1] - 2)):
+        if not is_check(transition_function(board, position, (position[0] + 1, position[1] - 2))):
+            moves.append([position, (position[0] + 1, position[1] - 2)])
     return moves
 
 

@@ -3,7 +3,6 @@ import unittest
 
 
 # run in top directory with python -m chessAI.tests
-# or python -m unittest test
 
 class Test(unittest.TestCase):
 
@@ -118,3 +117,24 @@ class Test(unittest.TestCase):
         self.assertTrue(is_valid_bishop_move(board, (4, 4), (3, 3)), "Should be True")
         self.assertTrue(is_valid_bishop_move(board, (4, 4), (2, 6)), "Should be True")
         self.assertFalse(is_valid_bishop_move(board, (4, 4), (2, 2)), "Should be False")
+
+    def test_is_valid_rook_move(self):
+        board = Board()
+        white_rook1 = Rook(WHITE, 1, 0, figDict[WHITE][Rook])
+        black_rook1 = Rook(BLACK, 5, 0, figDict[BLACK][Rook])
+        board.add_figure(white_rook1)
+        board.add_figure(black_rook1)
+        print("--------- White Rook Tests")
+        print("----------- Test series 1")
+        self.assertTrue(is_valid_rook_move(board, (1, 0), (5, 0)), "Should be True")
+        self.assertTrue(is_valid_rook_move(board, (1, 0), (1, 5)), "Should be True")
+        self.assertFalse(is_valid_rook_move(board, (1, 0), (3, 5)), "Should be False")
+        self.assertFalse(is_valid_rook_move(board, (1, 0), (6, 0)), "Should be False")
+        self.assertFalse(is_valid_rook_move(board, (1, 0), (-1, 0)), "Should be False")
+        board.switch_turn()
+        print("--------- Black Rook Tests")
+        print("----------- Test series 1")
+        self.assertTrue(is_valid_rook_move(board, (5, 0), (1, 0)), "Should be True")
+        self.assertTrue(is_valid_rook_move(board, (5, 0), (5, 2)), "Should be True")
+        self.assertFalse(is_valid_rook_move(board, (5, 0), (0, 0)), "Should be False")
+        self.assertFalse(is_valid_rook_move(board, (5, 0), (3, 2)), "Should be False")

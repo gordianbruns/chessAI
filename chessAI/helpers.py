@@ -60,9 +60,8 @@ def move_generator(board):
                 moves.extend(generate_rook_moves(board, pos))
             if type(figure) == Queen:
                 moves.extend(generate_queen_moves(board, pos))
-            if type(figure) == King:    # add castling for king move
-                return
-
+            if type(figure) == King:
+                moves.extend(generate_king_moves(board, pos))
     else:
         for pos, figure in board.get_black_figures().items():
             if type(figure) == Pawn:
@@ -76,7 +75,7 @@ def move_generator(board):
             if type(figure) == Queen:
                 moves.extend(generate_queen_moves(board, pos))
             if type(figure) == King:
-                return
+                moves.extend(generate_king_moves(board, pos))
     return moves
 
 
@@ -289,11 +288,49 @@ def is_valid_queen_move(board, start_position, end_position):
            is_valid_rook_move(board, start_position, end_position)
 
 
-def can_castle(board):
-    return
+def generate_king_moves(board, position):
+    moves = []
+    if is_valid_king_move(board, position, (position[0] + 1, position[1])):
+        if not is_check(board):
+            moves.append((position, (position[0] + 1, position[1])))
+    if is_valid_king_move(board, position, (position[0] - 1, position[1])):
+        if not is_check(board):
+            moves.append((position, (position[0] - 1, position[1])))
+    if is_valid_king_move(board, position, (position[0], position[1] + 1)):
+        if not is_check(board):
+            moves.append((position, (position[0], position[1] + 1)))
+    if is_valid_king_move(board, position, (position[0], position[1] - 1)):
+        if not is_check(board):
+            moves.append((position, (position[0], position[1] - 1)))
+    if is_valid_king_move(board, position, (position[0] + 1, position[1] + 1)):
+        if not is_check(board):
+            moves.append((position, (position[0] + 1, position[1] + 1)))
+    if is_valid_king_move(board, position, (position[0] - 1, position[1] - 1)):
+        if not is_check(board):
+            moves.append((position, (position[0] - 1, position[1] - 1)))
+    if is_valid_king_move(board, position, (position[0] + 1, position[1] - 1)):
+        if not is_check(board):
+            moves.append((position, (position[0] + 1, position[1] - 1)))
+    if is_valid_king_move(board, position, (position[0] - 1, position[1] + 1)):
+        if not is_check(board):
+            moves.append((position, (position[0] - 1, position[1] + 1)))
+    return moves
 
 
 def is_valid_king_move(board, start_position, end_position):
+    if is_in_bounds(end_position):
+        go_y = start_position[0] - end_position[0]
+        go_x = start_position[1] - end_position[1]
+        if abs(go_y) > 1 or abs(go_x) > 1:
+            return False
+        if board.get_figure(end_position[0], end_position[1]) is not None:
+            if board.get_figure(end_position[0], end_position[1]).get_color() == board.get_turn():
+                return False
+        return True
+    return False
+
+
+def can_castle(board):
     return
 
 

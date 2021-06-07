@@ -174,3 +174,14 @@ class Test(unittest.TestCase):
         self.assertTrue(is_valid_queen_move(board, (4, 4), (3, 3)), "Should be True")
         self.assertTrue(is_valid_queen_move(board, (4, 4), (2, 6)), "Should be True")
         self.assertFalse(is_valid_queen_move(board, (4, 4), (2, 2)), "Should be False")
+
+    def test_is_valid_king_move(self):
+        board = Board()
+        white_king1 = King(WHITE, 0, 3, figDict[WHITE][King])
+        board.add_figure(white_king1)
+        # no black king tests since white and black kings cannot clash
+        print("--------- King Tests")
+        print("----------- Test series 1")
+        self.assertTrue(is_valid_king_move(board, (0, 3), (0, 2)), "Should be True")
+        self.assertFalse(is_valid_king_move(board, (0, 3), (-1, 3)), "Should be False")
+        self.assertFalse(is_valid_king_move(board, (0, 3), (2, 3)), "Should be False")

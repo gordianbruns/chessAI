@@ -370,5 +370,25 @@ def generate_castle_moves(board):
     return moves
 
 
-def is_check(board):
-    return True
+def is_check(board, turn):
+    is_turned = False
+    if turn == WHITE:
+        if board.get_turn() != WHITE:
+            is_turned = True
+            board.switch_turn()
+        moves = move_generator(board)
+        if is_turned:
+            board.switch_turn()
+        if board.get_white_king_pos() in moves:
+            return True
+        return False
+    else:
+        if board.get_turn() != BLACK:
+            is_turned = True
+            board.switch_turn()
+        moves = move_generator(board)
+        if is_turned:
+            board.switch_turn()
+        if board.get_black_king_pos() in moves:
+            return True
+        return False

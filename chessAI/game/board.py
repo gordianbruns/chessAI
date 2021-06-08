@@ -10,6 +10,14 @@ class Board:
         self.black_figures = {}
         self._castle_white = [0, 0, 0]  # 0: rook in row 0, 1: rook in row 7, 2: king
         self._castle_black = [0, 0, 0]  # 0: rook in row 0, 1: rook in row 7, 2: king
+        self.white_king_pos = None
+        self.black_king_pos = None
+
+    def get_white_king_pos(self):
+        return self.white_king_pos
+
+    def get_black_king_pos(self):
+        return self.black_king_pos
 
     def get_white_figures(self):
         return self.white_figures
@@ -35,8 +43,12 @@ class Board:
 
     def add_figure(self, figure):
         if figure.get_color() == WHITE:
+            if type(figure) == King:
+                self.white_king_pos = figure.get_position()
             self.white_figures[figure.get_position()] = figure
         else:
+            if type(figure) == King:
+                self.black_king_pos = figure.get_position()
             self.black_figures[figure.get_position()] = figure
 
     def get_figure(self, x, y):
@@ -59,16 +71,20 @@ class Board:
                     self._castle_white[0] += 1
                 if start_position == (0, 7):
                     self._castle_white[1] += 1
-            if start_position == (0, 4) and type(figure) == King:
-                self._castle_white[2] += 1
+            if type(figure) == King:
+                self.white_king_pos = end_position
+                if start_position == (0, 4):
+                    self._castle_white[2] += 1
         else:
             if type(figure) == Rook:
                 if start_position == (7, 0):
                     self._castle_black[0] += 1
                 if start_position == (7, 7):
                     self._castle_black[1] += 1
-            if start_position == (7, 4) and type(figure) == King:
-                self._castle_black[2] += 1
+            if type(figure) == King:
+                self.black_king_pos = end_position
+                if start_position == (7, 4):
+                    self._castle_black[2] += 1
         if end_position in self.white_figures:
             del self.white_figures[end_position]
         if end_position in self.black_figures:

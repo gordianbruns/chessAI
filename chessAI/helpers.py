@@ -3,6 +3,7 @@ from .game.figures import *
 from .common.constants import *
 
 import copy
+from anytree import Node, RenderTree
 
 
 figDict = {WHITE: {Pawn: "♟", Rook: "♜", Knight: "♞", Bishop: "♝", King: "♚", Queen: "♛"},
@@ -422,3 +423,17 @@ def state_is_terminal(moves):   # not looking at a state so that it is more effi
     if len(moves) == 0:
         return True
     return False
+
+
+def create_state_tree(board):
+    leaf_nodes = []
+    current_state_node = Node(board)
+    moves = move_generator(board)
+    for move in moves:
+        if type(move) == str:
+            child = move
+        else:
+            child = transition_function(board, move[0], move[1])
+        child_node = Node(child, parent=current_state_node)
+        leaf_nodes.append(child_node)
+    return current_state_node, leaf_nodes

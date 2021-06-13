@@ -416,3 +416,9 @@ def is_check(board, turn):      # if turn == WHITE, check whether black is in ch
         if board.get_white_king_pos() in moves:
             return True
         return False
+
+
+def state_is_terminal(moves):   # not looking at a state so that it is more efficient if a person is playing
+    if len(moves) == 0:
+        return True
+    return False

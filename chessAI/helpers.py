@@ -1,9 +1,11 @@
 from .game.board import *
 from .game.figures import *
+from .game.node import *
 from .common.constants import *
 
 import copy
-from anytree import Node, RenderTree
+import random
+import math
 
 
 figDict = {WHITE: {Pawn: "♟", Rook: "♜", Knight: "♞", Bishop: "♝", King: "♚", Queen: "♛"},
@@ -429,11 +431,41 @@ def create_state_tree(board):
     leaf_nodes = []
     current_state_node = Node(board)
     moves = move_generator(board)
+    if state_is_terminal(moves):
+        print(current_state_node.get_board().switch_turn().get_turn(), "won")
     for move in moves:
         if type(move) == str:
             child = move
         else:
             child = transition_function(board, move[0], move[1])
-        child_node = Node(child, parent=current_state_node)
+        child_node = Node(child)
+        current_state_node.add_child(child_node)
+        child_node.set_depth(1)
         leaf_nodes.append(child_node)
     return current_state_node, leaf_nodes
+
+
+def random_strategy():
+    return random.uniform(-5, 5)
+
+
+def calculate_utility(board_node):
+    maximum = None
+    if board_node.get_depth() == 0:
+        maximum = Node(board_node.get_board())
+        maximum.set_utility(-math.inf)
+        for child in board_node.get_children():
+            if child.get_utility() > maximum.get_utility():
+                maximum = child
+        board_node.set_utility(maximum.get_utility())
+    return maximum
+
+
+def minimax(node):
+    if node is None:
+        return
+    for child in node.get_children():
+        minimax(child)
+    action = calculate_utility(node)
+    if action:
+        return action

@@ -1,41 +1,10 @@
-from .game.board import *
-from .game.figures import *
-from .game.node import *
-from .common.constants import *
+from chessAI.game.figures import *
+from chessAI.game.node import *
+from chessAI.common.constants import *
 
 import copy
 import random
 import math
-
-
-figDict = {WHITE: {Pawn: "♟", Rook: "♜", Knight: "♞", Bishop: "♝", King: "♚", Queen: "♛"},
-           BLACK: {Pawn: "♙", Rook: "♖", Knight: "♘", Bishop: "♗", King: "♔", Queen: "♕"}}
-
-
-def initial_state():
-    board = Board()
-    for i in range(COLUMNS):
-        board.add_figure(Pawn(WHITE, 1, i, figDict[WHITE][Pawn]))
-        board.add_figure(Pawn(BLACK, ROWS - 2, i, figDict[BLACK][Pawn]))
-
-    placers = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
-
-    for i in range(COLUMNS):
-        board.add_figure(placers[i](WHITE, 0, i, figDict[WHITE][placers[i]]))
-        board.add_figure(placers[i](BLACK, ROWS - 1, i, figDict[BLACK][placers[i]]))
-
-    return board
-
-
-def print_board(board):
-    for i in range(ROWS):
-        for j in range(COLUMNS):
-            figure = board.get_figure(i, j)
-            if figure is None:
-                print(" - ", end='')
-            else:
-                print("", figure, "", end='')
-        print()
 
 
 def transition_function(board, start_position, end_position):
@@ -49,61 +18,80 @@ def is_in_bounds(position):
     return (0 <= position[0] <= ROWS - 1) and (0 <= position[1] <= COLUMNS - 1)
 
 
-def move_generator(board):
+def move_generator(board, check):
     moves = []
     if board.get_turn() == WHITE:
         for pos, figure in board.get_white_figures().items():
             if type(figure) == Pawn:
-                moves.extend(generate_pawn_moves(board, pos))
+                moves.extend(generate_pawn_moves(board, pos, check))
             if type(figure) == Knight:
-                moves.extend(generate_knight_moves(board, pos))
+                moves.extend(generate_knight_moves(board, pos, check))
             if type(figure) == Bishop:
-                moves.extend(generate_bishop_moves(board, pos))
+                moves.extend(generate_bishop_moves(board, pos, check))
             if type(figure) == Rook:
-                moves.extend(generate_rook_moves(board, pos))
+                moves.extend(generate_rook_moves(board, pos, check))
             if type(figure) == Queen:
-                moves.extend(generate_queen_moves(board, pos))
+                moves.extend(generate_queen_moves(board, pos, check))
             if type(figure) == King:
-                moves.extend(generate_king_moves(board, pos))
+                moves.extend(generate_king_moves(board, pos, check))
     else:
         for pos, figure in board.get_black_figures().items():
             if type(figure) == Pawn:
-                moves.extend(generate_pawn_moves(board, pos))
+                moves.extend(generate_pawn_moves(board, pos, check))
             if type(figure) == Knight:
-                moves.extend(generate_knight_moves(board, pos))
+                moves.extend(generate_knight_moves(board, pos, check))
             if type(figure) == Bishop:
-                moves.extend(generate_bishop_moves(board, pos))
+                moves.extend(generate_bishop_moves(board, pos, check))
             if type(figure) == Rook:
-                moves.extend(generate_rook_moves(board, pos))
+                moves.extend(generate_rook_moves(board, pos, check))
             if type(figure) == Queen:
-                moves.extend(generate_queen_moves(board, pos))
+                moves.extend(generate_queen_moves(board, pos, check))
             if type(figure) == King:
-                moves.extend(generate_king_moves(board, pos))
-    moves.append(generate_castle_moves(board))
+                moves.extend(generate_king_moves(board, pos, check))
+    if check:
+        moves.append(generate_castle_moves(board))
     return moves
 
 
-def generate_pawn_moves(board, position):   # assumes that it is a pawn
+def generate_pawn_moves(board, position, check):   # assumes that it is a pawn
     moves = []
     if board.get_turn() == WHITE:
         if is_valid_pawn_move(board, position, (position[0] + 1, position[1] - 1)):
-            if not is_check(transition_function(board, position, (position[0] + 1, position[1] - 1)), BLACK):
+            if check:
+                if not is_check(transition_function(board, position, (position[0] + 1, position[1] - 1)), BLACK):
+                    moves.append([position, (position[0] + 1, position[1] - 1)])
+            else:
                 moves.append([position, (position[0] + 1, position[1] - 1)])
         if is_valid_pawn_move(board, position, (position[0] + 1, position[1])):
-            if not is_check(transition_function(board, position, (position[0] + 1, position[1])), BLACK):
+            if check:
+                if not is_check(transition_function(board, position, (position[0] + 1, position[1])), BLACK):
+                    moves.append([position, (position[0] + 1, position[1])])
+            else:
                 moves.append([position, (position[0] + 1, position[1])])
         if is_valid_pawn_move(board, position, (position[0] + 1, position[1] + 1)):
-            if not is_check(transition_function(board, position, (position[0] + 1, position[1] + 1)), BLACK):
+            if check:
+                if not is_check(transition_function(board, position, (position[0] + 1, position[1] + 1)), BLACK):
+                    moves.append([position, (position[0] + 1, position[1] + 1)])
+            else:
                 moves.append([position, (position[0] + 1, position[1] + 1)])
     else:
         if is_valid_pawn_move(board, position, (position[0] - 1, position[1] - 1)):
-            if not is_check(transition_function(board, position, (position[0] - 1, position[1] - 1)), WHITE):
+            if check:
+                if not is_check(transition_function(board, position, (position[0] - 1, position[1] - 1)), WHITE):
+                    moves.append([position, (position[0] - 1, position[1] - 1)])
+            else:
                 moves.append([position, (position[0] - 1, position[1] - 1)])
         if is_valid_pawn_move(board, position, (position[0] - 1, position[1])):
-            if not is_check(transition_function(board, position, (position[0] - 1, position[1])), WHITE):
+            if check:
+                if not is_check(transition_function(board, position, (position[0] - 1, position[1])), WHITE):
+                    moves.append([position, (position[0] - 1, position[1])])
+            else:
                 moves.append([position, (position[0] - 1, position[1])])
         if is_valid_pawn_move(board, position, (position[0] - 1, position[1] + 1)):
-            if not is_check(transition_function(board, position, (position[0] - 1, position[1] + 1)), WHITE):
+            if check:
+                if not is_check(transition_function(board, position, (position[0] - 1, position[1] + 1)), WHITE):
+                    moves.append([position, (position[0] - 1, position[1] + 1)])
+            else:
                 moves.append([position, (position[0] - 1, position[1] + 1)])
     return moves
 
@@ -145,39 +133,63 @@ def is_valid_pawn_move(board, start_position, end_position):    # assumes that i
     return False
 
 
-def generate_knight_moves(board, position):     # assumes that it is a knight
+def generate_knight_moves(board, position, check):     # assumes that it is a knight
     moves = []
     if is_valid_knight_move(board, position, (position[0] - 2, position[1] + 1)):
-        next_state = transition_function(board, position, (position[0] - 2, position[1] + 1))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] - 2, position[1] + 1))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append([position, (position[0] - 2, position[1] + 1)])
+        else:
             moves.append([position, (position[0] - 2, position[1] + 1)])
     if is_valid_knight_move(board, position, (position[0] - 2, position[1] - 1)):
-        next_state = transition_function(board, position, (position[0] - 2, position[1] - 1))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] - 2, position[1] - 1))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append([position, (position[0] - 2, position[1] - 1)])
+        else:
             moves.append([position, (position[0] - 2, position[1] - 1)])
     if is_valid_knight_move(board, position, (position[0] + 2, position[1] + 1)):
-        next_state = transition_function(board, position, (position[0] + 2, position[1] + 1))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] + 2, position[1] + 1))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append([position, (position[0] + 2, position[1] + 1)])
+        else:
             moves.append([position, (position[0] + 2, position[1] + 1)])
     if is_valid_knight_move(board, position, (position[0] + 2, position[1] - 1)):
-        next_state = transition_function(board, position, (position[0] + 2, position[1] - 1))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] + 2, position[1] - 1))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append([position, (position[0] + 2, position[1] - 1)])
+        else:
             moves.append([position, (position[0] + 2, position[1] - 1)])
     if is_valid_knight_move(board, position, (position[0] - 1, position[1] + 2)):
-        next_state = transition_function(board, position, (position[0] - 1, position[1] + 2))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] - 1, position[1] + 2))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append([position, (position[0] - 1, position[1] + 2)])
+        else:
             moves.append([position, (position[0] - 1, position[1] + 2)])
     if is_valid_knight_move(board, position, (position[0] + 1, position[1] + 2)):
-        next_state = transition_function(board, position, (position[0] + 1, position[1] + 2))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] + 1, position[1] + 2))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append([position, (position[0] + 1, position[1] + 2)])
+        else:
             moves.append([position, (position[0] + 1, position[1] + 2)])
     if is_valid_knight_move(board, position, (position[0] - 1, position[1] - 2)):
-        next_state = transition_function(board, position, (position[0] - 1, position[1] - 2))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] - 1, position[1] - 2))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append([position, (position[0] - 1, position[1] - 2)])
+        else:
             moves.append([position, (position[0] - 1, position[1] - 2)])
     if is_valid_knight_move(board, position, (position[0] + 1, position[1] - 2)):
-        next_state = transition_function(board, position, (position[0] + 1, position[1] - 2))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] + 1, position[1] - 2))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append([position, (position[0] + 1, position[1] - 2)])
+        else:
             moves.append([position, (position[0] + 1, position[1] - 2)])
     return moves
 
@@ -198,24 +210,36 @@ def is_valid_knight_move(board, start_position, end_position):  # assumes that i
     return False
 
 
-def generate_rook_moves(board, position):
+def generate_rook_moves(board, position, check):
     moves = []
     for i in range(1, 8):
         if is_valid_rook_move(board, position, (position[0] + i, position[1])):
-            next_state = transition_function(board, position, (position[0] + i, position[1]))
-            if not is_check(next_state, next_state.get_turn()):
+            if check:
+                next_state = transition_function(board, position, (position[0] + i, position[1]))
+                if not is_check(next_state, next_state.get_turn()):
+                    moves.append((position, (position[0] + i, position[1])))
+            else:
                 moves.append((position, (position[0] + i, position[1])))
         if is_valid_rook_move(board, position, (position[0] - i, position[1])):
-            next_state = transition_function(board, position, (position[0] - i, position[1]))
-            if not is_check(next_state, next_state.get_turn()):
+            if check:
+                next_state = transition_function(board, position, (position[0] - i, position[1]))
+                if not is_check(next_state, next_state.get_turn()):
+                    moves.append((position, (position[0] - i, position[1])))
+            else:
                 moves.append((position, (position[0] - i, position[1])))
         if is_valid_rook_move(board, position, (position[0], position[1] + i)):
-            next_state = transition_function(board, position, (position[0], position[1] + i))
-            if not is_check(next_state, next_state.get_turn()):
+            if check:
+                next_state = transition_function(board, position, (position[0], position[1] + i))
+                if not is_check(next_state, next_state.get_turn()):
+                    moves.append((position, (position[0], position[1] + i)))
+            else:
                 moves.append((position, (position[0], position[1] + i)))
         if is_valid_rook_move(board, position, (position[0], position[1] - i)):
-            next_state = transition_function(board, position, (position[0], position[1] - i))
-            if not is_check(next_state, next_state.get_turn()):
+            if check:
+                next_state = transition_function(board, position, (position[0], position[1] - i))
+                if not is_check(next_state, next_state.get_turn()):
+                    moves.append((position, (position[0], position[1] - i)))
+            else:
                 moves.append((position, (position[0], position[1] - i)))
     return moves
 
@@ -250,25 +274,37 @@ def is_valid_rook_move(board, start_position, end_position):
     return False
 
 
-def generate_bishop_moves(board, position):
+def generate_bishop_moves(board, position, check):
     moves = []
     for i in range(1, 8):
         if is_valid_bishop_move(board, position, (position[0]+i, position[1]+i)):
-            next_state = transition_function(board, position, (position[0]+i, position[1]+i))
-            if not is_check(next_state, next_state.get_turn()):
-                moves.append((position, (position[0]+i, position[1]+i)))
+            if check:
+                next_state = transition_function(board, position, (position[0]+i, position[1]+i))
+                if not is_check(next_state, next_state.get_turn()):
+                    moves.append((position, (position[0]+i, position[1]+i)))
+            else:
+                moves.append((position, (position[0] + i, position[1] + i)))
         if is_valid_bishop_move(board, position, (position[0]+i, position[1]-i)):
-            next_state = transition_function(board, position, (position[0]+i, position[1]-i))
-            if not is_check(next_state, next_state.get_turn()):
-                moves.append((position, (position[0]+i, position[1]-i)))
+            if check:
+                next_state = transition_function(board, position, (position[0]+i, position[1]-i))
+                if not is_check(next_state, next_state.get_turn()):
+                    moves.append((position, (position[0]+i, position[1]-i)))
+            else:
+                moves.append((position, (position[0] + i, position[1] - i)))
         if is_valid_bishop_move(board, position, (position[0]-i, position[1]+i)):
-            next_state = transition_function(board, position, (position[0]-i, position[1]+i))
-            if not is_check(next_state, next_state.get_turn()):
-                moves.append((position, (position[0]-i, position[1]+i)))
+            if check:
+                next_state = transition_function(board, position, (position[0]-i, position[1]+i))
+                if not is_check(next_state, next_state.get_turn()):
+                    moves.append((position, (position[0]-i, position[1]+i)))
+            else:
+                moves.append((position, (position[0] - i, position[1] + i)))
         if is_valid_bishop_move(board, position, (position[0]-i, position[1]-i)):
-            next_state = transition_function(board, position, (position[0]-i, position[1]-i))
-            if not is_check(next_state, next_state.get_turn()):
-                moves.append((position, (position[0]-i, position[1]-i)))
+            if check:
+                next_state = transition_function(board, position, (position[0]-i, position[1]-i))
+                if not is_check(next_state, next_state.get_turn()):
+                    moves.append((position, (position[0]-i, position[1]-i)))
+            else:
+                moves.append((position, (position[0] - i, position[1] - i)))
     return moves
 
 
@@ -296,10 +332,10 @@ def is_valid_bishop_move(board, start_position, end_position):
     return False
 
 
-def generate_queen_moves(board, position):
+def generate_queen_moves(board, position, check):
     moves = []
-    moves.extend(generate_bishop_moves(board, position))
-    moves.extend(generate_rook_moves(board, position))
+    moves.extend(generate_bishop_moves(board, position, check))
+    moves.extend(generate_rook_moves(board, position, check))
     return moves
 
 
@@ -308,39 +344,63 @@ def is_valid_queen_move(board, start_position, end_position):
            is_valid_rook_move(board, start_position, end_position)
 
 
-def generate_king_moves(board, position):
+def generate_king_moves(board, position, check):
     moves = []
     if is_valid_king_move(board, position, (position[0] + 1, position[1])):
-        next_state = transition_function(board, position, (position[0] + 1, position[0]))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] + 1, position[0]))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append((position, (position[0] + 1, position[1])))
+        else:
             moves.append((position, (position[0] + 1, position[1])))
     if is_valid_king_move(board, position, (position[0] - 1, position[1])):
-        next_state = transition_function(board, position, (position[0] - 1, position[0]))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] - 1, position[0]))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append((position, (position[0] - 1, position[1])))
+        else:
             moves.append((position, (position[0] - 1, position[1])))
     if is_valid_king_move(board, position, (position[0], position[1] + 1)):
-        next_state = transition_function(board, position, (position[0], position[0] + 1))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0], position[0] + 1))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append((position, (position[0], position[1] + 1)))
+        else:
             moves.append((position, (position[0], position[1] + 1)))
     if is_valid_king_move(board, position, (position[0], position[1] - 1)):
-        next_state = transition_function(board, position, (position[0], position[0] - 1))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0], position[0] - 1))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append((position, (position[0], position[1] - 1)))
+        else:
             moves.append((position, (position[0], position[1] - 1)))
     if is_valid_king_move(board, position, (position[0] + 1, position[1] + 1)):
-        next_state = transition_function(board, position, (position[0] + 1, position[0] + 1))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] + 1, position[0] + 1))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append((position, (position[0] + 1, position[1] + 1)))
+        else:
             moves.append((position, (position[0] + 1, position[1] + 1)))
     if is_valid_king_move(board, position, (position[0] - 1, position[1] - 1)):
-        next_state = transition_function(board, position, (position[0] - 1, position[0] - 1))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] - 1, position[0] - 1))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append((position, (position[0] - 1, position[1] - 1)))
+        else:
             moves.append((position, (position[0] - 1, position[1] - 1)))
     if is_valid_king_move(board, position, (position[0] + 1, position[1] - 1)):
-        next_state = transition_function(board, position, (position[0] + 1, position[0] - 1))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] + 1, position[0] - 1))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append((position, (position[0] + 1, position[1] - 1)))
+        else:
             moves.append((position, (position[0] + 1, position[1] - 1)))
     if is_valid_king_move(board, position, (position[0] - 1, position[1] + 1)):
-        next_state = transition_function(board, position, (position[0] - 1, position[0] + 1))
-        if not is_check(next_state, next_state.get_turn()):
+        if check:
+            next_state = transition_function(board, position, (position[0] - 1, position[0] + 1))
+            if not is_check(next_state, next_state.get_turn()):
+                moves.append((position, (position[0] - 1, position[1] + 1)))
+        else:
             moves.append((position, (position[0] - 1, position[1] + 1)))
     return moves
 
@@ -403,7 +463,7 @@ def is_check(board, turn):      # if turn == WHITE, check whether black is in ch
         if board.get_turn() != WHITE:
             is_turned = True
             board.switch_turn()
-        moves = move_generator(board)
+        moves = move_generator(board, False)
         if is_turned:
             board.switch_turn()
         if board.get_black_king_pos() in moves:
@@ -413,7 +473,7 @@ def is_check(board, turn):      # if turn == WHITE, check whether black is in ch
         if board.get_turn() != BLACK:
             is_turned = True
             board.switch_turn()
-        moves = move_generator(board)
+        moves = move_generator(board, False)
         if is_turned:
             board.switch_turn()
         if board.get_white_king_pos() in moves:
@@ -421,27 +481,26 @@ def is_check(board, turn):      # if turn == WHITE, check whether black is in ch
         return False
 
 
-def state_is_terminal(moves):   # not looking at a state so that it is more efficient if a person is playing
-    if len(moves) == 0:
-        return True
-    return False
-
-
 def create_state_tree(board):
     leaf_nodes = []
     current_state_node = Node(board)
-    moves = move_generator(board)
-    if state_is_terminal(moves):
-        print(current_state_node.get_board().switch_turn().get_turn(), "won")
+    iterator = filter(lambda array: len(array) > 0, move_generator(board, True))
+    moves = list(iterator)
     for move in moves:
-        if type(move) == str:
-            child = move
-        else:
-            child = transition_function(board, move[0], move[1])
-        child_node = Node(child)
-        current_state_node.add_child(child_node)
-        child_node.set_depth(1)
-        leaf_nodes.append(child_node)
+        try:
+            if len(move) == 0:
+                continue
+            if len(move) == 1:
+                child = move
+            else:
+                child = transition_function(board, move[0], move[1])
+            child_node = Node(child)
+            current_state_node.add_child(child_node)
+            child_node.set_depth(1)
+            leaf_nodes.append(child_node)
+        except IndexError:
+            print(move)
+            raise IndexError
     return current_state_node, leaf_nodes
 
 

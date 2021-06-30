@@ -1,5 +1,6 @@
 from ..common.constants import *
 from .figures import *
+from .helpers import move_generator
 
 
 class Board:
@@ -95,16 +96,50 @@ class Board:
             self.white_figures[end_position] = figure
             del self.white_figures[start_position]
         else:
-            figure = self.black_figures[start_position]
-            figure.set_position(end_position[0], end_position[1])
-            self.black_figures[end_position] = figure
-            del self.black_figures[start_position]
+            try:
+                figure = self.black_figures[start_position]
+                figure.set_position(end_position[0], end_position[1])
+                self.black_figures[end_position] = figure
+                del self.black_figures[start_position]
+            except KeyError:
+                print(start_position)
+                print(self.white_king_pos, self.black_king_pos)
+                print("white figures:", self.white_figures.keys())
+                print("black figures:", self.black_figures.keys())
+                raise KeyError
 
     def switch_turn(self):
         if self.turn == WHITE:
             self.turn = BLACK
         else:
             self.turn = WHITE
+
+    def is_terminal(self):
+        return len(list(filter(lambda array: len(array) > 0, move_generator(self, True)))) == 0
+
+    def initialize(self):
+        self.clear_board()
+        for i in range(COLUMNS):
+            self.add_figure(Pawn(WHITE, 1, i, figDict[WHITE][Pawn]))
+            self.add_figure(Pawn(BLACK, ROWS - 2, i, figDict[BLACK][Pawn]))
+
+        placers = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+
+        for i in range(COLUMNS):
+            self.add_figure(placers[i](WHITE, 0, i, figDict[WHITE][placers[i]]))
+            self.add_figure(placers[i](BLACK, ROWS - 1, i, figDict[BLACK][placers[i]]))
+
+        return self
+
+    def print(self):
+        for i in range(ROWS):
+            for j in range(COLUMNS):
+                figure = self.get_figure(i, j)
+                if figure is None:
+                    print(" - ", end='')
+                else:
+                    print("", figure, "", end='')
+            print()
 
     # mainly for testing
     def clear_board(self):

@@ -1,4 +1,5 @@
-from ..helpers import *
+from chessAI.game.helpers import *
+from chessAI.game.board import *
 import unittest
 
 

@@ -1,13 +1,20 @@
-from .helpers import *
+from chessAI.game.helpers import *
+from chessAI.game.board import *
 
 
 def run():
-    board = initial_state()
+    board = Board()
+    board.initialize()
     play_game(Node(board), "random", "random")
 
 
 def play_game(node, function1, function2):
-    print_board(node.get_board())
+    print(node.get_board().get_turn())
+    node.get_board().print()
+    print()
+    if node.get_board().is_terminal():
+        print(node.get_board().get_turn(), "won!")
+        return
     tree, leaf_nodes = create_state_tree(node.get_board())
     if tree.get_board().get_turn() == WHITE:
         if function1 == "random":

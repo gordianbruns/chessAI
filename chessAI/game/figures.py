@@ -20,6 +20,9 @@ class Figure:
     def __str__(self):
         return self.name
 
+    def __repr__(self):
+        return self.__class__.__name__ + '(%r, %r, %r)' % (self.color, self.x, self.y)
+
 
 class Pawn(Figure):
 

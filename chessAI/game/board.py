@@ -1,6 +1,7 @@
 from ..common.constants import *
 from .figures import *
 from .helpers import move_generator
+import chess
 
 
 class Board:
@@ -87,19 +88,27 @@ class Board:
                 if start_position == (7, 4):
                     self._castle_black[2] += 1
         if end_position in self.white_figures:
+            if type(self.white_figures[end_position]) == King:
+                print()
             del self.white_figures[end_position]
         if end_position in self.black_figures:
+            if type(self.black_figures[end_position]) == King:
+                print()
             del self.black_figures[end_position]
         if start_position in self.white_figures:
             figure = self.white_figures[start_position]
             figure.set_position(end_position[0], end_position[1])
             self.white_figures[end_position] = figure
+            if type(self.white_figures[start_position]) == King:
+                print()
             del self.white_figures[start_position]
         else:
             try:
                 figure = self.black_figures[start_position]
                 figure.set_position(end_position[0], end_position[1])
                 self.black_figures[end_position] = figure
+                if type(self.black_figures[start_position]) == King:
+                    print()
                 del self.black_figures[start_position]
             except KeyError:
                 print(start_position)
@@ -115,7 +124,7 @@ class Board:
             self.turn = WHITE
 
     def is_terminal(self):
-        return len(list(filter(lambda array: len(array) > 0, move_generator(self, True)))) == 0
+        return len(move_generator(self, True)) == 0
 
     def initialize(self):
         self.clear_board()
@@ -132,14 +141,13 @@ class Board:
         return self
 
     def print(self):
-        for i in range(ROWS):
-            for j in range(COLUMNS):
-                figure = self.get_figure(i, j)
-                if figure is None:
-                    print(" - ", end='')
-                else:
-                    print("", figure, "", end='')
-            print()
+        matrix_to_print = [[str(self.get_figure(row, column)) if self.get_figure(row, column) is not None else '-'
+                            for column in range(ROWS)] for row in range(COLUMNS)]
+        s = [[str(e) for e in row] for row in matrix_to_print]
+        lens = [max(map(len, col)) for col in zip(*s)]
+        fmt = '\t'.join('{{:{}}}'.format(x) for x in lens)
+        table = [fmt.format(*row) for row in s]
+        print('\n'.join(table))
 
     # mainly for testing
     def clear_board(self):

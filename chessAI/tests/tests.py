@@ -178,11 +178,25 @@ class Test(unittest.TestCase):
 
     def test_is_valid_king_move(self):
         board = Board()
-        white_king1 = King(WHITE, 0, 3, figDict[WHITE][King])
+        white_king1 = King(WHITE, 0, 4, figDict[WHITE][King])
         board.add_figure(white_king1)
         # no black king tests since white and black kings cannot clash
         print("--------- King Tests")
         print("----------- Test series 1")
-        self.assertTrue(is_valid_king_move(board, (0, 3), (0, 2)), "Should be True")
-        self.assertFalse(is_valid_king_move(board, (0, 3), (-1, 3)), "Should be False")
-        self.assertFalse(is_valid_king_move(board, (0, 3), (2, 3)), "Should be False")
+        self.assertTrue(is_valid_king_move(board, (0, 4), (0, 3)), "Should be True")
+        self.assertFalse(is_valid_king_move(board, (0, 4), (-1, 3)), "Should be False")
+        self.assertFalse(is_valid_king_move(board, (0, 4), (2, 3)), "Should be False")
+        self.assertFalse(is_valid_king_move(board, (0, 4), (1, 1)), "Should be False")
+
+    def test_is_check(self):
+        board = Board()
+        white_king1 = King(WHITE, 0, 3, figDict[WHITE][King])
+        black_rook1 = Rook(BLACK, 7, 3, figDict[BLACK][Rook])
+        board.add_figure(white_king1)
+        board.add_figure(black_rook1)
+        print("--------- Check Tests")
+        self.assertTrue(is_check(board, BLACK), "Should be True")
+
+    def test_is_in_bounds(self):
+        print("--------- In Bounds Check")
+        self.assertFalse(is_in_bounds((1, -1)), "Should be False")

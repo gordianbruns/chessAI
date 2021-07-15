@@ -1,2 +1,0 @@
-WHITE = "white"
-BLACK = "black"

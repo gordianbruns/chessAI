@@ -46,6 +46,25 @@ def killer_strategy(current_node, node):
     return utility + random.uniform(-1, 1)
 
 
+def finishing_strategy(current_node, node):
+    outcome = node.get_board().outcome()
+    if node.get_board().is_check():
+        if node.get_board().turn == current_node.get_board().turn:
+            return -10
+        else:
+            return 10
+    if outcome is None:
+        return 0
+    if outcome.winner is current_node.get_board().turn:
+        return 9999
+    elif outcome.winner is not current_node.get_board().turn:
+        return -9999
+
+
+def killer_and_finisher(current_node, node):
+    return killer_strategy(current_node, node) + finishing_strategy(current_node, node)
+
+
 def calculate_utility(board_node):
     maximum = None
     if board_node.get_depth() == 0:

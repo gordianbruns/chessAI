@@ -5,14 +5,16 @@ import copy
 import random
 import math
 
+from typing import Tuple
 
-def transition_function(board, move):
+
+def transition_function(board: chess.Board, move: chess.Move) -> chess.Board:
     copy_board = copy.deepcopy(board)
     copy_board.push(move)
     return copy_board
 
 
-def create_state_tree(board):
+def create_state_tree(board: chess.Board) -> Tuple[Node, list]:
     leaf_nodes = []
     current_state_node = Node(board)
     moves = board.legal_moves
@@ -27,11 +29,11 @@ def create_state_tree(board):
     return current_state_node, leaf_nodes
 
 
-def random_strategy():
+def random_strategy() -> float:
     return random.uniform(-5, 5)
 
 
-def ending(current_node, node):
+def ending(current_node: Node, node: Node) -> int:
     outcome = node.get_board().outcome()
     if outcome is None:
         return 0
@@ -41,7 +43,7 @@ def ending(current_node, node):
         return -9999
 
 
-def material(current_node, node, weight):
+def material(current_node: Node, node: Node, weight: float) -> float:
     board = node.get_board()
     white_pawns = len(board.pieces(chess.PAWN, chess.WHITE))
     black_pawns = len(board.pieces(chess.PAWN, chess.BLACK))
@@ -63,12 +65,12 @@ def material(current_node, node, weight):
     return -material_num
 
 
-def evaluation_function1(current_node, node):
+def evaluation_function1(current_node: Node, node: Node) -> float:
     evaluation = material(current_node, node, 1) + ending(current_node, node) + random.uniform(0, 1)
     return evaluation
 
 
-def choose_action(node):
+def choose_action(node: Node) -> Node:
     maximum = None
     if node.get_depth() == 0:
         maximum = Node(node.get_board())
@@ -79,7 +81,7 @@ def choose_action(node):
     return maximum
 
 
-def minimax(node):
+def minimax(node: Node) -> Node:
     for child in node.get_children():
         minimax(child)
     action = choose_action(node)

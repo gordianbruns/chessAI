@@ -10,14 +10,14 @@ black = 0
 
 def run():
     board = chess.Board()
-    for i in range(100):
+    for i in range(1):
         play_game(Node(board), "function1", "random")
     print("Ties:", ties)
     print("White:", white)
     print("Black:", black)
 
 
-def play_game(node, function1, function2):
+def play_game(node: Node, function1: str, function2: str) -> None:
     print(node.get_board())
     print()
     outcome = node.get_board().outcome()

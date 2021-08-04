@@ -10,8 +10,8 @@ black = 0
 
 def run():
     board = chess.Board()
-    for i in range(1):
-        play_game(Node(board), "function1", "random")
+    for i in range(50):
+        play_game(Node(board), "function2", "function1")
     print("Ties:", ties)
     print("White:", white)
     print("Black:", black)
@@ -45,6 +45,9 @@ def play_game(node: Node, function1: str, function2: str) -> None:
         elif function1 == "function1":
             for node in leaf_nodes:
                 node.set_utility(evaluation_function1(tree, node))
+        elif function1 == "function2":
+            for node in leaf_nodes:
+                node.set_utility(evaluation_function2(tree, node))
     else:
         if function2 == "random":
             for node in leaf_nodes:
@@ -52,6 +55,9 @@ def play_game(node: Node, function1: str, function2: str) -> None:
         elif function2 == "function1":
             for node in leaf_nodes:
                 node.set_utility(evaluation_function1(tree, node))
+        elif function2 == "function2":
+            for node in leaf_nodes:
+                node.set_utility(evaluation_function2(tree, node))
     next_node = minimax(tree)
     play_game(next_node, function1, function2)
 

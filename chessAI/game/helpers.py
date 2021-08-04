@@ -65,7 +65,30 @@ def material(current_node: Node, node: Node, weight: float) -> float:
     return -material_num
 
 
+def mobility(current_node: Node, node: Node, weight: float) -> float:
+    switched = False
+    if current_node.get_board().turn != node.get_board().turn:
+        if node.get_board().turn == chess.WHITE:
+            node.get_board().turn = chess.BLACK
+        else:
+            node.get_board().turn = chess.WHITE
+        switched = True
+    mobility_value = node.get_board().legal_moves.count()
+    if switched:
+        if node.get_board().turn == chess.WHITE:
+            node.get_board().turn = chess.BLACK
+        else:
+            node.get_board().turn = chess.WHITE
+    return mobility_value * weight
+
+
 def evaluation_function1(current_node: Node, node: Node) -> float:
+    evaluation = material(current_node, node, 1) + ending(current_node, node) + mobility(current_node, node, 0.5) +\
+                 random.uniform(0, 1)
+    return evaluation
+
+
+def evaluation_function2(current_node: Node, node: Node) -> float:
     evaluation = material(current_node, node, 1) + ending(current_node, node) + random.uniform(0, 1)
     return evaluation
 
